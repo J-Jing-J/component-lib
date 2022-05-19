@@ -9,13 +9,21 @@ import Tab from '@/components/Tab/tab';
 export default function IndexPage() {
   return (
     <div>
-      <Tab mode="vertical">
+      <Tab type={'editable-card'}>
+        <TabPane tab={'tab 1'}>tab1 content</TabPane>
+        <TabPane disabled tab={'tab 2'}>
+          tab2 content
+        </TabPane>
+        <TabPane tab={'tab 3'}>tab3 content</TabPane>
+      </Tab>
+
+      <Tab style={{ marginTop: '5rem' }} mode="vertical">
         <TabPane tab={'tab 1'}>tab1 content</TabPane>
         <TabPane tab={'tab 2'}>tab2 content</TabPane>
         <TabPane tab={'tab 3'}>tab3 content</TabPane>
       </Tab>
 
-      <Menu>
+      {/* <Menu>
         <MenuItem>link</MenuItem>
         <MenuItem>link</MenuItem>
         <MenuItem>link</MenuItem>
@@ -27,7 +35,7 @@ export default function IndexPage() {
       </Button>
       <Button btnType={'link'} href="www.baidu.com">
         Hello
-      </Button>
+      </Button> */}
     </div>
   );
 }

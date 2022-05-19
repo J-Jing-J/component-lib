@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import React, { useState, createContext } from 'react';
-import { TabPaneProps } from './tabPane';
+import React, { useState, createContext, Fragment, useEffect } from 'react';
+import TabPane, { TabPaneProps } from './tabPane';
 
 type TabMode = 'horizontal' | 'vertical';
 type TabType = 'line' | 'card' | 'editable-card';
@@ -48,8 +48,12 @@ const Tab: React.FC<TabProps> = (props) => {
     'is-card': type === 'card',
     'is-editable-card': type === 'editable-card',
   });
+  const isEditable: boolean = type === 'editable-card';
   const ContentClasses = classNames('content', {});
-  const containerClasses = classNames('TabContainer', {});
+  const containerClasses = classNames('TabContainer', {
+    'container-vertical': mode === 'vertical',
+  });
+  const addClasses = classNames('tab-pane', 'add-pane', {});
   const handleClick = (index: number) => {
     // 设置高亮
     setCurrentActive(index);
@@ -60,6 +64,8 @@ const Tab: React.FC<TabProps> = (props) => {
   };
 
   const [tabContent, setTabContent] = useState();
+
+  // 接收子组件传来的文字，并渲染在content区
   const renderContent = (children: any) => {
     setTabContent(children);
   };
@@ -67,10 +73,10 @@ const Tab: React.FC<TabProps> = (props) => {
   const passContext: ITabContext = {
     index: currentActive ? currentActive : 0,
     onChange: handleClick,
-    // children: children ? children : 'New Tab Content',
     renderContent: renderContent,
   };
 
+  // 筛选出是TabPane的元素渲染，其他元素警告
   const renderTab = () => {
     return React.Children.map(children, (child, index) => {
       const childElement =
@@ -89,15 +95,55 @@ const Tab: React.FC<TabProps> = (props) => {
     });
   };
 
+  // 获取index最大值
+  const useIndexNum = () => {
+    let tempNum = 0;
+    React.Children.map(children, (child, index) => {
+      const childElement =
+        child as React.FunctionComponentElement<TabPaneProps>;
+      const { displayName } = childElement.type;
+      if (displayName === 'TabPane') {
+        tempNum += 1;
+      }
+    });
+    console.log('调用');
+    return tempNum;
+  };
+
+  const [paneNum, setPaneNum] = useState(useIndexNum());
+  const [tabPane, setTabPane] = useState([
+    <TabPane index={paneNum} tab="NewTab">
+      New Tab Content
+    </TabPane>,
+  ]);
+
+  const addClick = () => {
+    // const totalNum = useIndexNum();
+    setTabPane([
+      ...tabPane,
+      <TabPane index={paneNum + 1} tab="NewTab">
+        New Tab Content
+      </TabPane>,
+    ]);
+    console.log(paneNum + 1);
+    setPaneNum((paneNum) => paneNum + 1);
+  };
+
   return (
-    <div className={containerClasses}>
-      <ul className={TabClasses} style={style}>
-        <TabContext.Provider value={passContext}>
-          {/* {children} */}
+    <div className={containerClasses} style={style}>
+      <TabContext.Provider value={passContext}>
+        <ul className={TabClasses}>
           {renderTab()}
-        </TabContext.Provider>
-      </ul>
-      <div className={ContentClasses}>{tabContent}</div>
+          {/* {children} */}
+          {tabPane.map((item) => item)}
+          {isEditable ? (
+            <li className={addClasses} onClick={addClick}>
+              +
+            </li>
+          ) : null}
+        </ul>
+        <div className={ContentClasses}>{tabContent}</div>
+      </TabContext.Provider>
     </div>
   );
 };

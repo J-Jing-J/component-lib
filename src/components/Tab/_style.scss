@@ -4,6 +4,10 @@
   justify-content: flex-start;
 }
 
+.container-vertical {
+  flex-direction: row;
+}
+
 .content {
   flex: 1;
   width: 100%;
@@ -55,24 +59,24 @@
   }
 }
 
-.tab-horizontal {
+.is-horizontal {
   >.tab-pane {
     border-bottom: $tab-pane-active-border-width solid transparent;
   }
 }
 
-.tab-vertical {
+.is-vertical {
   flex-direction: column;
-  border-bottom: 0px;
-  margin: 10px 20px;
-  border-right: $tab-border-width solid $tab-border-color;
+  border-bottom: none;
+  border-right: none;
 
-  >.tab-pane {
+  >.tab-pane,
+  .addBtn {
     border-left: $tab-pane-active-border-width solid transparent;
 
     &.is-active,
     &:hover {
-      border-bottom: 0px;
+      border-bottom: none;
       border-left: $tab-pane-active-border-width solid $tab-pane-active-color;
     }
   }

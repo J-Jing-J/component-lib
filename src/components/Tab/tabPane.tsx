@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ReactNode, useContext } from 'react';
+import { ReactNode, useContext, useEffect } from 'react';
 import { TabContext } from './tab';
 
 export interface TabPaneProps {
@@ -24,6 +24,12 @@ const TabPane: React.FC<TabPaneProps> = (props) => {
       context.renderContent(children);
     }
   };
+
+  useEffect(() => {
+    if (index === 0) {
+      context.renderContent(children);
+    }
+  }, []);
 
   return (
     <li style={style} className={classes} onClick={handleClick}>
