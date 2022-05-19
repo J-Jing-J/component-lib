@@ -247,6 +247,23 @@ $menu-item-active-color: $primary !default;
 $menu-item-active-border-width: 2px !default;
 $menu-item-disabled-color: $gray-600 !default;
 
+
+// tab
+$tab-border-width: $border-width !default;
+$tab-border-color: $border-color !default;
+$tab-box-shadow: inset 0 1px 0 rgba($white, .15),
+0 1px 1px rgba($black, .075) !default;
+$tab-transition: color .15s ease-in-out,
+border-color .15s ease-in-out !default;
+
+// tab-pane
+$tab-pane-padding-y: .5rem !default;
+$tab-pane-padding-x: 1rem !default;
+$tab-pane-active-color: $primary !default;
+$tab-pane-active-border-width: 2px !default;
+$tab-pane-disabled-color: $gray-600 !default;
+
+
 //sub-menu
 //submenu
 $submenu-box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .12),
