@@ -21,8 +21,8 @@ export interface TabProps {
 interface ITabContext {
   index: number;
   onChange?: ChangeCallback;
-  // children?: React.ReactNode,
   renderContent: (children: any) => void;
+  deleteTab?: (index: number) => void;
 }
 
 export const TabContext = createContext<ITabContext>({
@@ -54,6 +54,7 @@ const Tab: React.FC<TabProps> = (props) => {
     'container-vertical': mode === 'vertical',
   });
   const addClasses = classNames('tab-pane', 'add-pane', {});
+
   const handleClick = (index: number) => {
     // 设置高亮
     setCurrentActive(index);
@@ -61,6 +62,13 @@ const Tab: React.FC<TabProps> = (props) => {
     if (onChange) {
       onChange(index);
     }
+  };
+
+  const deleteClick = (index: number) => {
+    console.log(index);
+    const tempPanes = [...tabPane];
+    tempPanes.splice(index, 1);
+    setTabPane(tempPanes);
   };
 
   const [tabContent, setTabContent] = useState();
@@ -74,25 +82,7 @@ const Tab: React.FC<TabProps> = (props) => {
     index: currentActive ? currentActive : 0,
     onChange: handleClick,
     renderContent: renderContent,
-  };
-
-  // 筛选出是TabPane的元素渲染，其他元素警告
-  const renderTab = () => {
-    return React.Children.map(children, (child, index) => {
-      const childElement =
-        child as React.FunctionComponentElement<TabPaneProps>;
-      const { displayName } = childElement.type;
-      if (displayName === 'TabPane') {
-        // 为TabPane添加index属性
-        return React.cloneElement(childElement, {
-          index,
-        });
-      } else {
-        console.error(
-          'Warning: Tab has a child which is not a TabPane Component',
-        );
-      }
-    });
+    deleteTab: deleteClick,
   };
 
   // 获取index最大值
@@ -106,22 +96,39 @@ const Tab: React.FC<TabProps> = (props) => {
         tempNum += 1;
       }
     });
-    console.log('调用');
-    return tempNum;
+    return tempNum - 1;
   };
 
-  const [paneNum, setPaneNum] = useState(useIndexNum());
-  const [tabPane, setTabPane] = useState([
-    <TabPane index={paneNum} tab="NewTab">
-      New Tab Content
-    </TabPane>,
-  ]);
+  const [paneNum, setPaneNum] = useState(useIndexNum);
+
+  // 筛选出是TabPane的元素渲染，其他元素警告
+  const renderTab = () => {
+    return React.Children.map(children, (child, index) => {
+      const childElement =
+        child as React.FunctionComponentElement<TabPaneProps>;
+      const { displayName } = childElement.type;
+      const tempArr = [];
+      if (displayName === 'TabPane') {
+        tempArr.push(
+          React.cloneElement(childElement, {
+            index,
+          }),
+        );
+      } else {
+        console.error('Warning: Tab组件中只显示TabPane组件');
+      }
+      return tempArr;
+    });
+  };
+
+  // const [paneNum, setPaneNum] = useState(useIndexNum());
+  const [tabPane, setTabPane] = useState<any>(renderTab());
 
   const addClick = () => {
     // const totalNum = useIndexNum();
     setTabPane([
       ...tabPane,
-      <TabPane index={paneNum + 1} tab="NewTab">
+      <TabPane index={paneNum + 1} tab="New">
         New Tab Content
       </TabPane>,
     ]);
@@ -129,13 +136,15 @@ const Tab: React.FC<TabProps> = (props) => {
     setPaneNum((paneNum) => paneNum + 1);
   };
 
+  // useEffect(() => { renderTab() }, [])
+
   return (
     <div className={containerClasses} style={style}>
       <TabContext.Provider value={passContext}>
         <ul className={TabClasses}>
-          {renderTab()}
+          {/* {renderTab()} */}
           {/* {children} */}
-          {tabPane.map((item) => item)}
+          {tabPane?.map((item: Element) => item)}
           {isEditable ? (
             <li className={addClasses} onClick={addClick}>
               +
